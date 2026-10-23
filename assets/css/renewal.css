@@ -1,0 +1,1321 @@
+/* ==========================================================================
+   Smart Labo — Website 刷新 / renewal.css（P32-3 Phase 1D）
+   --------------------------------------------------------------------------
+   使いどころ:
+     会社TOP（index.html）でのみ読み込む。既存12ページのCSSには手を入れない。
+
+   ルール:
+     1. すべてのクラスに `sl-` prefix を付ける（既存 .btn / .container 等とは衝突させない）。
+     2. 既存の汎用クラス（.btn, .container, .section 等）を**上書きしない**。
+     3. 新しい色は tokens.css へ追加せず、このファイル内の `.sl-page` スコープに閉じる
+        （tokens.css には「新しいブランドカラーをここで発明しない」というルールがあるため）。
+     4. 外部フォント・外部CDN・依存を追加しない。フォントは既存 --font-sans を使う。
+     5. アニメーションは最小限。スクロール連動演出・カウントアップは入れない。
+     6. Salon実画面（assets/images/salon/*.webp）は「表示上限幅」を超えて拡大しない
+        （memo/shop/booking ≦520px・ai-review ≦680px・briefing ≦680px）。
+        画像そのものには枠・影・注釈を焼き込まず、角丸・影・端末枠はすべてCSSで付ける。
+   ========================================================================== */
+
+.sl-page {
+  /* Salon補助色（会社TOPが美容室サイトに見えないよう、背景と小さなアクセントに限定） */
+  --sl-ivory:   #FCFAF7;
+  --sl-greige:  #F4F1ED;
+  --sl-warm:    #FAF6F0;
+  --sl-sage:    #B8C9C0;
+  --sl-beige:   #D8C6B8;
+  --sl-sage-dk: #4F7A68;
+
+  /* 既存トークンの別名（このファイル内でのみ使用） */
+  --sl-blue:      var(--c-blue);
+  --sl-blue-dk:   #153E75;
+  --sl-navy-deep: var(--c-navy);
+  --sl-cyan:      #38BDF8;
+  --sl-blue-pale: #EFF6FF;
+  --sl-blue-soft: #E6EEFB;
+  --sl-navy:      #172033;
+  --sl-gray:      #64748B;
+
+  --sl-radius:    14px;
+  --sl-radius-sm: 10px;
+  --sl-shadow:    0 1px 2px rgba(23, 32, 51, .06), 0 8px 24px rgba(23, 32, 51, .08);
+  --sl-shadow-sm: 0 1px 2px rgba(23, 32, 51, .06), 0 3px 10px rgba(23, 32, 51, .06);
+  --sl-shadow-lg: 0 2px 4px rgba(23, 32, 51, .08), 0 24px 60px rgba(23, 32, 51, .18);
+}
+
+/* ------------------------------------------------------------------ 共通 -- */
+
+.sl-section { padding: 80px 0; }
+.sl-section--tight { padding: 56px 0; }
+.sl-section--ivory { background: var(--sl-ivory); }
+.sl-section--greige { background: var(--sl-greige); }
+.sl-section--warm { background: var(--sl-warm); }
+.sl-section--pale { background: var(--sl-blue-pale); }
+.sl-section--soft { background: var(--sl-blue-soft); }
+.sl-section--navy { background: var(--sl-navy); color: #fff; }
+.sl-section--deep {
+  background:
+    radial-gradient(900px 420px at 85% 0%, rgba(56, 189, 248, .16), transparent 60%),
+    linear-gradient(160deg, var(--sl-navy-deep) 0%, var(--sl-blue-dk) 100%);
+  color: #fff;
+}
+
+.sl-eyebrow {
+  display: inline-block;
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  color: var(--sl-blue);
+  background: var(--sl-blue-pale);
+  border-radius: 999px;
+  padding: 5px 12px;
+  margin: 0 0 14px;
+}
+.sl-section--navy .sl-eyebrow,
+.sl-section--deep .sl-eyebrow { color: #dbe8ff; background: rgba(255, 255, 255, .12); }
+
+.sl-h2 {
+  font-size: clamp(1.5rem, 1.15rem + 1.5vw, 2.1rem);
+  font-weight: 800;
+  line-height: 1.4;
+  letter-spacing: .01em;
+  margin: 0 0 14px;
+  color: var(--sl-navy);
+}
+.sl-section--navy .sl-h2,
+.sl-section--deep .sl-h2 { color: #fff; }
+
+.sl-lead {
+  font-size: 1rem;
+  line-height: 1.9;
+  color: var(--text-secondary);
+  margin: 0 0 28px;
+  max-width: 38em;
+}
+.sl-section--navy .sl-lead,
+.sl-section--deep .sl-lead { color: #c7d2e6; }
+
+.sl-note {
+  font-size: .82rem;
+  line-height: 1.8;
+  color: var(--sl-gray);
+  margin: 10px 0 0;
+}
+.sl-section--deep .sl-note,
+.sl-section--navy .sl-note { color: #b5c3dd; }
+
+/* 架空データ注記（読めるサイズを保つ） */
+.sl-demo-note {
+  font-size: .8rem;
+  line-height: 1.7;
+  color: var(--sl-gray);
+  margin: 12px 0 0;
+}
+.sl-section--deep .sl-demo-note { color: #b5c3dd; }
+
+.sl-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.sl-actions .btn { min-height: 46px; }
+
+/* 見出し＋リードを中央に寄せる節（課題・循環・料金） */
+.sl-center { text-align: center; }
+.sl-center .sl-lead { margin-left: auto; margin-right: auto; }
+.sl-center .sl-actions { justify-content: center; }
+
+/* ---------------------------------------------------- 実画面の枠（共通） -- */
+
+/* 画像は拡大しない。枠側で幅を制限する */
+.sl-media img { display: block; width: 100%; height: auto; }
+
+/* 管理画面風の窓（PCの実画面用） */
+.sl-window {
+  background: #fff;
+  border: 1px solid #e3e9f2;
+  border-radius: var(--sl-radius);
+  box-shadow: var(--sl-shadow);
+  overflow: hidden;
+}
+.sl-window__bar {
+  display: flex; align-items: center; gap: 7px;
+  padding: 9px 14px;
+  background: #f6f8fb;
+  border-bottom: 1px solid #eaeff6;
+}
+.sl-window__dot { width: 8px; height: 8px; border-radius: 50%; background: #d6deea; }
+.sl-window__title { margin-left: 6px; font-size: .72rem; font-weight: 700; color: var(--sl-gray); letter-spacing: .02em; }
+.sl-window--glow { box-shadow: 0 2px 4px rgba(0, 0, 0, .2), 0 28px 70px rgba(2, 10, 40, .45); border-color: rgba(255, 255, 255, .18); }
+
+/* スマートフォン枠 */
+.sl-phone {
+  background: #111827;
+  border-radius: 30px;
+  padding: 9px;
+  box-shadow: var(--sl-shadow-lg);
+}
+.sl-phone__screen { border-radius: 22px; overflow: hidden; background: #fff; }
+
+/* 枠の下の小ラベル */
+.sl-media__label {
+  display: block;
+  margin: 12px 0 0;
+  font-size: .84rem;
+  font-weight: 700;
+  color: var(--sl-navy);
+  text-align: center;
+}
+.sl-media__label small { display: block; font-size: .76rem; font-weight: 500; color: var(--sl-gray); margin-top: 2px; }
+
+/* 画像ごとの表示上限幅（拡大ボケ防止） */
+.sl-media--memo,
+.sl-media--shop,
+.sl-media--booking { max-width: 520px; }
+.sl-media--review { max-width: 680px; }
+.sl-media--briefing { max-width: 660px; }
+
+/* ------------------------------------------------------- ファーストビュー -- */
+
+.sl-hero {
+  /* 白地 + 濃紺の細い区切り。淡色の面を広く取らず、濃紺と青ボタンを最も濃い要素にする */
+  background: #fff;
+  border-bottom: 1px solid var(--c-border, #E4E8F0);
+  padding: 64px 0 76px;
+  overflow: hidden;
+}
+
+/* ヒーロー内は影を使わず罫線で輪郭を作る（安っぽさの主因を外す） */
+.sl-hero .sl-hero__visual,
+.sl-hero .sl-slide__body,
+.sl-hero .sl-media,
+.sl-hero .sl-window { box-shadow: none; }
+.sl-hero .sl-media,
+.sl-hero .sl-window,
+.sl-hero .sl-slide__body { border: 1px solid var(--c-border, #E4E8F0); }
+
+/* eyebrow はピル型をやめ、縦罫で受ける */
+.sl-hero .sl-eyebrow {
+  background: none;
+  border-radius: 0;
+  border-left: 3px solid var(--c-navy, #0A1B3D);
+  padding: 0 0 0 10px;
+  color: var(--text-secondary, #5C6B82);
+}
+
+.sl-hero .sl-hero__title { color: var(--c-navy, #0A1B3D); letter-spacing: -.005em; }
+
+.sl-hero .sl-hero__chip { background: var(--c-navy, #0A1B3D); border-radius: 2px; }
+
+/* スローガン下の一行（サービス名を含む） */
+.sl-hero__claim {
+  margin: 0 0 18px;
+  font-size: clamp(1rem, .9rem + .5vw, 1.2rem);
+  font-weight: 700;
+  line-height: 1.6;
+  color: var(--c-navy, #0A1B3D);
+}
+.sl-hero__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: 48px;
+  align-items: center;
+}
+.sl-hero__title {
+  font-size: clamp(1.85rem, 1.1rem + 3vw, 3rem);
+  font-weight: 800;
+  line-height: 1.32;
+  letter-spacing: .01em;
+  margin: 0 0 18px;
+  color: var(--sl-navy);
+}
+.sl-hero__sub {
+  font-size: 1rem;
+  line-height: 1.95;
+  color: var(--text-secondary);
+  margin: 0 0 26px;
+  max-width: 30em;
+}
+.sl-hero__links { margin-top: 14px; }
+.sl-hero__links a { font-size: .9rem; font-weight: 600; }
+
+/* 右側：実画面スライダー（Phase 1F）。4枚の実画面を静かに切り替える。
+   ・舞台（stage）は固定高にして、スライドごとに高さが変わってガタつかない（CLS 0）
+   ・JS無効時／JS失敗時は1枚目（接客準備）だけが表示され、操作UIは出ない */
+.sl-hero__visual {
+  position: relative;
+  max-width: 600px;
+  justify-self: end;
+  width: 100%;
+}
+.sl-hero__chip {
+  display: inline-block;
+  margin: 0 0 10px;
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  color: #fff;
+  background: rgba(23, 32, 51, .72);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+.sl-slider { --sl-stage-h: 560px; }
+.sl-slider__stage { position: relative; height: var(--sl-stage-h); }
+.sl-slide {
+  position: absolute; inset: 0; margin: 0;
+  display: flex; flex-direction: column;
+  opacity: 0;
+  transition: opacity .55s ease;
+}
+.sl-slide.is-active { opacity: 1; }
+.sl-slide[hidden] { display: none; }
+.sl-slide__body {
+  flex: 1 1 auto; min-height: 0;
+  display: flex; align-items: center; justify-content: center; gap: 18px;
+}
+.sl-slide__cap {
+  flex: none; text-align: center; padding-top: 14px;
+  font-size: .92rem; font-weight: 800; color: var(--sl-navy); line-height: 1.5;
+}
+.sl-slide__cap span { display: block; font-size: .8rem; font-weight: 500; color: var(--sl-gray); margin-top: 3px; }
+/* スライドごとの実画面サイズ（上限幅は 1C-2B の表示上限を守る） */
+.sl-slide--brief .sl-media { width: min(100%, 470px); }
+.sl-slide--memo .sl-media { width: auto; max-width: 100%; }
+.sl-slide--memo .sl-phone__screen img { width: auto; height: auto; max-height: calc(var(--sl-stage-h) - 112px); max-width: 100%; }
+.sl-slide--review .sl-media { width: min(100%, 400px); }
+.sl-slide--public .sl-media { width: 200px; }
+/* 操作UI（JSが is-ready を付けたときだけ表示） */
+.sl-slider__ctl { display: none; align-items: center; justify-content: center; gap: 14px; margin-top: 12px; }
+.sl-slider.is-ready .sl-slider__ctl { display: flex; }
+.sl-slider__btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 1px solid #d7e0ee; background: #fff; color: var(--sl-navy);
+  display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease);
+}
+.sl-slider__btn:hover { background: var(--sl-blue-pale); }
+.sl-slider__btn:focus-visible { outline: 2px solid var(--sl-blue); outline-offset: 2px; }
+.sl-slider__dots { display: flex; gap: 10px; }
+.sl-slider__dots button {
+  width: 10px; height: 10px; border-radius: 50%; border: 0; padding: 0;
+  background: #c9d6ea; cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.sl-slider__dots button.is-active { background: var(--sl-blue); transform: scale(1.2); }
+.sl-slider__dots button:focus-visible { outline: 2px solid var(--sl-blue); outline-offset: 3px; }
+/* デモ動画ボタン（動画が用意できるまで hidden）とモーダル */
+.sl-hero__video { margin: 10px 0 0; }
+.sl-video-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid #d7e0ee; background: #fff; color: var(--sl-navy);
+  border-radius: 999px; padding: 8px 14px; font: inherit; font-size: .84rem; font-weight: 700; cursor: pointer;
+}
+.sl-video-btn:hover { background: var(--sl-blue-pale); }
+/* hidden属性（動画未完成）のときは必ず非表示（display指定がUAの[hidden]より優先されるため明示） */
+.sl-video-btn[hidden] { display: none; }
+.sl-hero__video:has(> [hidden]) { display: none; }
+.sl-video-dialog {
+  width: min(92vw, 960px); border: 0; border-radius: var(--sl-radius); padding: 16px 18px 14px;
+  background: #fff; box-shadow: var(--sl-shadow-lg);
+}
+.sl-video-dialog::backdrop { background: rgba(10, 27, 61, .6); }
+.sl-video-dialog__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.sl-video-dialog__title { margin: 0; font-size: .95rem; font-weight: 800; color: var(--sl-navy); }
+.sl-video-dialog__close { border: 0; background: transparent; font-size: 1.4rem; line-height: 1; cursor: pointer; color: var(--sl-gray); padding: 4px 8px; }
+.sl-video-dialog__body video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; background: #000; border-radius: var(--sl-radius-sm); }
+
+/* 固定ヘッダー（64px）の下に見出しが潜らないよう、アンカー先の余白を明示する
+   （base.css の scroll-padding-top と同じ値。ページ内リンク・戻るボタンの両方で効く） */
+.sl-page section[id],
+.sl-page span[id] { scroll-margin-top: calc(var(--header-h) + 16px); }
+
+
+/* --------------------------------------------------------------- 3ステップ -- */
+
+.sl-steps3 {
+  list-style: none; margin: 0; padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  counter-reset: sl3;
+}
+.sl-steps3 li {
+  position: relative;
+  padding: 6px 36px 6px 0;
+}
+.sl-steps3 li + li { padding-left: 36px; border-left: 1px solid #e6ebf3; }
+.sl-steps3 li:last-child { padding-right: 0; }
+.sl-steps3__num {
+  display: block;
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--sl-blue);
+  letter-spacing: .02em;
+  margin: 0 0 12px;
+}
+.sl-steps3__title { font-size: 1.12rem; font-weight: 800; margin: 0 0 8px; color: var(--sl-navy); line-height: 1.5; }
+.sl-steps3__text { font-size: .9rem; line-height: 1.85; color: var(--text-secondary); margin: 0; }
+/* PCでは節の間に矢印を置く */
+.sl-steps3 li + li::before {
+  content: "→";
+  position: absolute; left: -9px; top: 4px;
+  width: 18px; height: 18px; line-height: 18px;
+  text-align: center;
+  font-size: .8rem; font-weight: 800;
+  color: var(--sl-blue);
+  background: #fff;
+}
+
+/* ---------------------------------------------------------- 全体ストーリー -- */
+
+.sl-chain {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px 8px;
+}
+.sl-chain li {
+  display: flex; align-items: center; gap: 8px;
+  font-size: .88rem; font-weight: 700; color: var(--sl-navy);
+  background: #fff; border: 1px solid #e5ebf4;
+  border-radius: 999px; padding: 9px 16px;
+  box-shadow: var(--sl-shadow-sm);
+}
+.sl-chain li::after { content: "→"; color: var(--sl-blue); font-weight: 800; margin-left: 2px; }
+.sl-chain li:last-child::after { content: "↺"; }
+.sl-chain li[data-ai] { border-color: #cfe0d6; background: #f3f8f5; }
+.sl-chain li[data-ai]::before {
+  content: "AI"; font-size: .64rem; font-weight: 800; letter-spacing: .06em;
+  color: #fff; background: var(--sl-sage-dk); border-radius: 6px; padding: 2px 6px;
+}
+.sl-chain-note { font-size: .82rem; color: var(--sl-gray); margin: 14px 0 0; line-height: 1.8; }
+.sl-chain-note b { color: var(--sl-navy); }
+
+/* ------------------------------------------------------------- 課題提起 -- */
+
+.sl-issues {
+  list-style: none; margin: 0 auto; padding: 0;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;
+  max-width: 820px;
+  text-align: left;
+}
+.sl-issues li {
+  position: relative;
+  background: #fff; border: 1px solid #e8edf5; border-radius: var(--sl-radius-sm);
+  padding: 14px 16px 14px 42px;
+  font-size: .95rem; line-height: 1.75; font-weight: 600; color: var(--sl-navy);
+  box-shadow: var(--sl-shadow-sm);
+}
+.sl-issues li::before {
+  content: ""; position: absolute; left: 16px; top: 1.05em;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--sl-beige);
+}
+.sl-issues-bridge {
+  margin: 26px auto 0; max-width: 38em;
+  font-size: .95rem; line-height: 1.9; color: var(--text-secondary);
+}
+
+/* -------------------------------------------------------------- 2カラム -- */
+
+.sl-2col {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+.sl-card {
+  background: #fff;
+  border: 1px solid #e8edf5;
+  border-radius: var(--sl-radius);
+  padding: 22px 22px;
+  box-shadow: var(--sl-shadow-sm);
+}
+.sl-card__title { font-size: 1.02rem; font-weight: 800; margin: 0 0 8px; color: var(--sl-navy); }
+.sl-card__text { font-size: .88rem; line-height: 1.85; color: var(--text-secondary); margin: 0; }
+
+.sl-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.sl-list li {
+  position: relative;
+  padding-left: 26px;
+  font-size: .92rem;
+  line-height: 1.85;
+  color: var(--text-secondary);
+}
+.sl-list li::before {
+  content: "";
+  position: absolute; left: 6px; top: .72em;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--sl-beige);
+}
+.sl-list--check li::before { background: var(--sl-sage-dk); }
+.sl-list--onblue li { color: #dbe4f3; }
+.sl-list--onblue li::before { background: var(--sl-cyan); }
+
+/* ---------------------------------------------------------- BEFORE/AFTER -- */
+
+.sl-ba {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 52px minmax(0, 1fr);
+  gap: 16px;
+  align-items: stretch;
+}
+.sl-ba__arrow {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; font-weight: 800; color: var(--sl-blue);
+}
+.sl-ba__head {
+  display: inline-block;
+  font-size: .76rem; font-weight: 800; letter-spacing: .06em;
+  border-radius: 999px; padding: 4px 12px; margin-bottom: 14px;
+}
+.sl-ba--before { background: #fbfaf8; }
+.sl-ba--before .sl-ba__head { color: #7a6a5c; background: #efe7df; }
+.sl-ba--after  { border-color: #cfe0d6; }
+.sl-ba--after  .sl-ba__head { color: #fff; background: var(--sl-sage-dk); }
+
+/* ------------------------------------------------ 実画面＋説明の2カラム -- */
+
+.sl-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 48px;
+  align-items: center;
+}
+.sl-split__copy .sl-h2 { margin-bottom: 14px; }
+.sl-split__copy .sl-lead { margin-bottom: 20px; }
+.sl-split__media { display: flex; flex-direction: column; align-items: center; }
+.sl-split--media-left .sl-split__media { order: -1; }
+.sl-split__media .sl-media { width: 100%; }
+
+/* 30秒メモ：スマホ枠の幅 */
+.sl-split .sl-media--memo { max-width: 400px; }
+
+/* ------------------------------------------------------ AI整理（比較） -- */
+
+/* 見出しブロックは中央寄せ（節の上部に余白を多めに取り、固定ヘッダーの直下で詰まらないようにする）。
+   比較UI本体は左寄せのまま。2枚の幅は 1440px で約565px（上限680以内・画像内の主要文字が読める） */
+.sl-review { padding-top: 96px; }
+.sl-review .sl-lead { margin-bottom: 34px; }
+.sl-compare {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 36px minmax(0, 1fr);
+  gap: 14px;
+  align-items: stretch;
+  text-align: left;
+}
+.sl-compare__arrow {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; font-weight: 800; color: var(--sl-blue);
+}
+.sl-compare__item { display: flex; flex-direction: column; gap: 12px; }
+.sl-compare__tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  align-self: flex-start;
+  font-size: .82rem; font-weight: 800; color: var(--sl-navy);
+}
+.sl-compare__tag b {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px; border-radius: 7px;
+  font-size: .76rem; color: #fff; background: var(--sl-blue);
+}
+.sl-compare__item--after .sl-compare__tag b { background: var(--sl-sage-dk); }
+.sl-compare__note {
+  margin: 0;
+  font-size: .84rem; line-height: 1.8; color: var(--text-secondary);
+  background: #fff; border: 1px solid #e8edf5; border-radius: var(--sl-radius-sm);
+  padding: 10px 14px;
+}
+.sl-compare__item--after .sl-compare__note { border-color: #cfe0d6; background: #f3f8f5; }
+
+.sl-points {
+  list-style: none; margin: 28px 0 0; padding: 0;
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px;
+  text-align: left;
+}
+.sl-points li {
+  background: #fff; border: 1px solid #e8edf5; border-radius: var(--sl-radius-sm);
+  padding: 14px 16px;
+  font-size: .86rem; line-height: 1.7; font-weight: 600; color: var(--sl-navy);
+}
+.sl-points li span { display: block; font-size: .7rem; font-weight: 800; color: var(--sl-blue); letter-spacing: .06em; margin-bottom: 6px; }
+
+/* ---------------------------------------------------------- 接客準備 -- */
+
+.sl-brief .sl-split { gap: 56px; }
+.sl-chips { list-style: none; margin: 0 0 22px; padding: 0; display: grid; gap: 10px; }
+.sl-chips li {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: start;
+  font-size: .92rem; line-height: 1.75; color: #e6edf9;
+}
+.sl-chips b {
+  display: inline-block;
+  font-size: .74rem; font-weight: 800; letter-spacing: .06em;
+  color: var(--sl-navy-deep); background: #fff;
+  border-radius: 999px; padding: 4px 11px; margin-top: 3px; white-space: nowrap;
+}
+.sl-brief .sl-media--briefing { max-width: 620px; }
+
+/* ------------------------------------------------ 店舗ページ＋WEB予約 -- */
+
+.sl-phones {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 320px));
+  justify-content: center;
+  gap: 36px 44px;
+  margin-top: 10px;
+}
+.sl-phones .sl-media { max-width: 320px; width: 100%; }
+.sl-phones .sl-media + .sl-media { margin-top: 44px; }
+.sl-public-points {
+  list-style: none; margin: 34px auto 0; padding: 0;
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
+}
+.sl-public-points li {
+  font-size: .84rem; font-weight: 700; color: var(--sl-blue-dk);
+  background: #fff; border: 1px solid #d7e4fb; border-radius: 999px; padding: 7px 14px;
+}
+
+/* 店舗自身で更新できる（Phase 1F） */
+.sl-update {
+  margin: 36px auto 0; max-width: 980px;
+  background: #fff; border: 1px solid #d7e4fb; border-radius: var(--sl-radius);
+  box-shadow: var(--sl-shadow-sm);
+  padding: 24px 26px;
+  display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 24px; align-items: center;
+  text-align: left;
+}
+.sl-update__title { font-size: 1.2rem; font-weight: 800; line-height: 1.45; margin: 0 0 10px; color: var(--sl-navy); }
+.sl-update__text { margin: 0; font-size: .9rem; line-height: 1.85; color: var(--text-secondary); }
+.sl-update__items { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.sl-update__items li {
+  background: var(--sl-blue-pale); border-radius: var(--sl-radius-sm); padding: 10px 12px;
+  font-size: .84rem; line-height: 1.6; color: var(--text-secondary);
+}
+.sl-update__items b { display: block; font-size: .9rem; color: var(--sl-blue-dk); }
+
+/* ------------------------------------------------------------------ 循環 -- */
+
+.sl-loop {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; gap: 10px;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  counter-reset: slloop;
+}
+.sl-loop li {
+  position: relative;
+  border: 1px solid #e5ebf4; background: #fff;
+  border-radius: var(--sl-radius-sm);
+  padding: 14px 8px 14px;
+  font-size: .84rem; font-weight: 700; color: var(--sl-navy);
+  text-align: center;
+  box-shadow: var(--sl-shadow-sm);
+}
+.sl-loop li::before {
+  counter-increment: slloop;
+  content: "0" counter(slloop);
+  display: block; font-size: .7rem; font-weight: 800; color: var(--sl-blue); margin-bottom: 6px;
+}
+.sl-loop li + li::after {
+  content: "→";
+  position: absolute; left: -11px; top: 50%; transform: translateY(-50%);
+  width: 12px; text-align: center;
+  font-size: .8rem; font-weight: 800; color: var(--sl-blue);
+  background: transparent;
+}
+.sl-loop li[data-ai] { border-color: #cfe0d6; background: #f3f8f5; }
+.sl-loop__return {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  margin: 16px 0 0;
+  padding: 12px 16px;
+  border: 1px dashed #c9d6ea; border-radius: 999px;
+  font-size: .86rem; font-weight: 700; color: var(--sl-blue-dk);
+  background: #fff;
+}
+.sl-loop__return span { font-size: 1.1rem; }
+
+/* ------------------------------------------------------------------ 価格 -- */
+
+.sl-pricebox {
+  max-width: 820px; margin: 0 auto;
+  background: #fff; border: 1px solid #d9e5fb; border-radius: var(--sl-radius);
+  box-shadow: var(--sl-shadow);
+  padding: 30px 32px 28px;
+  text-align: left;
+}
+.sl-pricebox__head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 10px 20px; }
+.sl-pricebox__name { font-size: 1.15rem; font-weight: 800; color: var(--sl-navy); margin: 0; }
+.sl-price {
+  display: inline-flex; align-items: baseline; gap: 6px;
+  margin: 6px 0 4px;
+}
+.sl-price__num { font-size: 2.2rem; font-weight: 800; color: var(--sl-navy); letter-spacing: .01em; }
+.sl-price__unit { font-size: .95rem; font-weight: 700; color: var(--sl-navy); }
+.sl-price__tax { font-size: .8rem; font-weight: 600; color: var(--sl-gray); }
+.sl-facts {
+  list-style: none; margin: 18px 0 0; padding: 18px 0 0;
+  border-top: 1px solid #e8edf5;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;
+}
+.sl-facts li { font-size: .9rem; color: var(--text-secondary); line-height: 1.7; }
+.sl-facts li b { display: block; font-size: 1.05rem; font-weight: 800; color: var(--sl-navy); }
+.sl-pricebox__inc {
+  margin: 18px 0 0; font-size: .9rem; line-height: 1.85; color: var(--text-secondary);
+}
+.sl-pricebox .sl-actions { margin-top: 22px; }
+
+/* ---------------------------------------------------------- HP制作（縮小）-- */
+
+/* 制作イメージ3種（Phase 1F）。PC3列→タブレット2+1→スマホ1列 */
+.sl-samples {
+  list-style: none; margin: 0 0 10px; padding: 0;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px;
+}
+.sl-sample { margin: 0; }
+.sl-sample .sl-window img { display: block; width: 100%; height: auto; }
+.sl-sample__label { margin: 10px 0 0; font-size: .9rem; font-weight: 800; color: var(--sl-navy); display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 8px; }
+.sl-sample__label b {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; border-radius: 6px; font-size: .74rem;
+  color: #fff; background: var(--sl-navy);
+}
+.sl-sample__label span { flex-basis: 100%; font-size: .78rem; font-weight: 500; color: var(--sl-gray); }
+
+.sl-web .sl-2col { gap: 16px; }
+.sl-web .sl-card { padding: 20px 20px 18px; }
+.sl-web .sl-price__num { font-size: 1.7rem; }
+.sl-web .sl-list li { font-size: .88rem; }
+
+/* ---------------------------------------------------------------- Works -- */
+
+.sl-works {
+  display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 32px; align-items: center;
+}
+.sl-works__aside {
+  background: #fff; border: 1px solid #e8edf5; border-radius: var(--sl-radius);
+  padding: 20px 22px; box-shadow: var(--sl-shadow-sm);
+}
+.sl-works__aside h3 { font-size: .95rem; font-weight: 800; margin: 0 0 8px; color: var(--sl-navy); }
+.sl-works__aside p { margin: 0; font-size: .86rem; line-height: 1.8; color: var(--text-secondary); }
+.sl-works__aside .sl-actions { margin-top: 12px; }
+
+/* ------------------------------------------------------------- ステップ -- */
+
+.sl-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; grid-template-columns: repeat(3, minmax(0, 1fr)); counter-reset: slstep; }
+.sl-steps li {
+  border: 1px solid #e5ebf4; background: #fff; border-radius: var(--sl-radius-sm);
+  padding: 14px 16px 14px 50px; position: relative;
+  font-size: .9rem; line-height: 1.8; color: var(--sl-navy); font-weight: 700;
+}
+.sl-steps li::before {
+  counter-increment: slstep;
+  content: counter(slstep);
+  position: absolute; left: 16px; top: 13px;
+  width: 24px; height: 24px; border-radius: 7px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: .76rem; font-weight: 800;
+  color: #fff; background: var(--sl-blue);
+}
+
+/* 2カラム内に置く場合は2列にして、項目名が不自然に折り返さないようにする */
+.sl-split .sl-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+/* -------------------------------------------------------------- 最終CTA -- */
+
+.sl-final { text-align: center; }
+.sl-final .sl-h2 { color: #fff; }
+.sl-final .sl-lead { margin-left: auto; margin-right: auto; }
+.sl-final .sl-actions { justify-content: center; }
+
+/* --------------------------------------------------------- レスポンシブ -- */
+
+@media (max-width: 1080px) {
+  .sl-loop { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .sl-loop li + li::after { display: none; }
+  .sl-points { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 960px) {
+  .sl-hero__inner { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+  .sl-hero__visual { justify-self: center; max-width: 560px; }
+  .sl-slider { --sl-stage-h: 520px; }
+  .sl-samples { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sl-update { grid-template-columns: minmax(0, 1fr); }
+  .sl-2col { grid-template-columns: minmax(0, 1fr); }
+  .sl-split { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .sl-split--media-left .sl-split__media { order: 0; }
+  .sl-split .sl-media--memo { max-width: 360px; }
+  .sl-compare { grid-template-columns: minmax(0, 1fr); }
+  .sl-compare__arrow { padding: 0; transform: rotate(90deg); }
+  .sl-ba { grid-template-columns: minmax(0, 1fr); }
+  .sl-ba__arrow { transform: rotate(90deg); padding: 0; }
+  .sl-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sl-works { grid-template-columns: minmax(0, 1fr); }
+  .sl-facts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 760px) {
+  .sl-steps3 { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .sl-steps3 li,
+  .sl-steps3 li + li { padding: 0 0 0 54px; border-left: none; }
+  .sl-steps3__num { position: absolute; left: 0; top: 0; font-size: 1.6rem; }
+  .sl-steps3 li + li::before { display: none; }
+  .sl-issues { grid-template-columns: minmax(0, 1fr); }
+  .sl-phones { grid-template-columns: minmax(0, 320px); }
+  .sl-phones .sl-media + .sl-media { margin-top: 0; }
+}
+
+@media (max-width: 640px) {
+  .sl-section { padding: 56px 0; }
+  .sl-section--tight { padding: 40px 0; }
+  .sl-hero { padding: 40px 0 48px; }
+  .sl-slider { --sl-stage-h: 490px; }
+  .sl-slide--review .sl-media { width: min(100%, 330px); }
+  .sl-slide--public .sl-media { width: calc(50% - 9px); }
+  .sl-samples { grid-template-columns: minmax(0, 1fr); }
+  .sl-update { padding: 20px 18px; }
+  .sl-update__items { grid-template-columns: minmax(0, 1fr); }
+  .sl-loop { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sl-steps { grid-template-columns: minmax(0, 1fr); }
+  .sl-points { grid-template-columns: minmax(0, 1fr); }
+  .sl-facts { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .sl-pricebox { padding: 22px 18px 20px; }
+  .sl-chain li { font-size: .82rem; padding: 8px 13px; }
+
+  /* スマホではCTAを押しやすい幅に */
+  .sl-actions { gap: 10px; }
+  .sl-actions .btn { width: 100%; justify-content: center; }
+  .sl-hero__links { text-align: center; }
+}
+
+/* スマホではヘッダーのCTAもタップしやすい高さにする。
+   ★共有CSS（base/components）は変更せず、この会社TOP（.sl-page）だけへ適用する。 */
+@media (max-width: 640px) {
+  .sl-page .site-header__actions .btn { min-height: 44px; }
+}
+
+@media (max-width: 380px) {
+  .sl-loop { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* 動きを減らす設定を尊重する */
+@media (prefers-reduced-motion: reduce) {
+  .sl-page * { animation: none !important; transition: none !important; }
+}
+
+
+/* ==========================================================================
+   WEB-V3-SALON-URGENT-2（P0一括実装）
+   ★ここで追加するものは全て `.sl-page`（会社TOP）スコープに閉じる。
+     共有CSS（base.css / components.css / tokens.css）は一切変更していない。
+   ========================================================================== */
+
+/* --- 1. スマホヘッダーの「文字が箱から溢れて重なる」事故を構造的に防ぐ ---------
+   根本原因は index.html の副CTAに site-header__sub が無く、
+   base.css の「1080px以下で副CTAを隠す」設計が効いていなかったこと（HTML側で修正済）。
+   ここはその再発防止。.btn は white-space:nowrap のため、flexで箱だけが縮むと
+   文字が箱の外へはみ出して隣の要素と重なる。CTAとトグルは縮ませず、
+   ロゴのワードマークだけが（万一のとき）省略記号で縮むようにしておく。 */
+.sl-page .site-header__inner { flex-wrap: nowrap; min-width: 0; }
+.sl-page .site-header__actions { flex: 0 0 auto; }
+.sl-page .site-header__actions .btn { flex: 0 0 auto; }
+.sl-page .nav-toggle { flex: 0 0 auto; }
+.sl-page .logo { flex: 0 1 auto; min-width: 0; }
+/* ドロワー専用の相談導線。デスクトップ幅ではヘッダーCTA・ヒーローCTAと重複し、
+   ナビが長くなってロゴを圧迫するため表示しない（ドロワー化する1080px以下でのみ出す） */
+@media (min-width: 1081px) {
+  .sl-page .site-nav__cta { display: none; }
+}
+.sl-page .logo__icon { flex: 0 0 auto; }
+.sl-page .logo__text { overflow: hidden; text-overflow: ellipsis; }
+
+/* --- 1b. H1の語中改行を防ぐ（「再来店」等が行またぎで千切れないように） ------- */
+.sl-page .sl-nb { display: inline-block; }
+
+/* --- 2. ファーストビューの副次導線（第3・第4）を2本並べる ------------------- */
+.sl-page .sl-hero__links { display: flex; flex-wrap: wrap; gap: 4px 20px; }
+
+/* --- 3. Salonデモ（静止画ガイドツアー） -------------------------------------
+   1枚ずつ横並びの行として積む。グリッドで敷き詰めないので、
+   縦長のスマホ画面と横長のPC画面が混在してもカード高がずれない。 */
+.sl-tour__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 40px;
+}
+.sl-tour__item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px 40px;
+  align-items: center;
+}
+/* 偶数番は画像を左・文章を右にして、上から下へ視線が蛇行するようにする */
+.sl-tour__item:nth-child(even) .sl-tour__text { order: 2; }
+
+.sl-tour__step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 10px;
+  font-size: .8rem;
+  font-weight: 800;
+  letter-spacing: .04em;
+  color: var(--sl-blue);
+}
+.sl-tour__num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: var(--sl-navy);
+  color: #fff;
+  font-size: .8rem;
+  font-weight: 800;
+}
+.sl-tour__title {
+  margin: 0 0 10px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  line-height: 1.6;
+  color: var(--sl-navy);
+}
+.sl-tour__desc {
+  margin: 0;
+  font-size: .92rem;
+  line-height: 1.85;
+  color: var(--text-secondary);
+}
+
+/* 枠は既存の .sl-window / .sl-phone をそのまま流用する。
+   画像の実寸比がばらばらでも、枠の最大幅で見た目の大きさをそろえる。 */
+.sl-tour__media { display: flex; justify-content: center; min-width: 0; }
+.sl-tour__media > * { width: min(100%, 470px); }
+.sl-tour__media--phone > * { width: min(100%, 210px); }
+.sl-tour__media img { display: block; width: 100%; height: auto; }
+
+/* --- 4. 運営（1行導線）。独立した会社sectionの置き換え --------------------- */
+.sl-operator {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px 16px;
+  margin: 0;
+  padding: 22px var(--gutter);
+  font-size: .84rem;
+  color: var(--sl-gray);
+}
+.sl-operator a { font-weight: 700; }
+
+/* --- 5. レスポンシブ ------------------------------------------------------- */
+@media (max-width: 860px) {
+  /* 1列。文章 → 画像 の順に読ませる（order指定を戻す） */
+  .sl-tour__item { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .sl-tour__item:nth-child(even) .sl-tour__text { order: 0; }
+  .sl-tour__list { gap: 34px; }
+  .sl-tour__media > * { width: min(100%, 420px); }
+  .sl-tour__media--phone > * { width: min(100%, 200px); }
+}
+
+@media (max-width: 640px) {
+  /* ヘッダーは「ロゴ＋主CTA＋ハンバーガー」の3点のみ。余白を詰めて確実に収める */
+  .sl-page .site-header__inner { gap: var(--sp-3); }
+  .sl-page .sl-hero__links { justify-content: center; }
+  .sl-tour__title { font-size: 1.02rem; }
+  .sl-tour__media--phone > * { width: min(100%, 190px); }
+}
+
+
+/* ==========================================================================
+   WEB-V3-SALON-URGENT-4（Salon専用ページ＋TOP要約）
+   ★すべて `.sl-page` 配下の新クラスのみ。共有CSSは変更しない。
+   ========================================================================== */
+
+/* --- salon.html ヒーロー: スライダー無しの静的1枚（sl-hero__visualの流用） --- */
+.sl-hero__visual--static { display: grid; gap: 10px; justify-items: center; }
+.sl-hero__visual--static .sl-media--briefing { width: min(100%, 470px); }
+.sl-hero__visual--static .sl-media--briefing img { display: block; width: 100%; height: auto; }
+.sl-hero__visual--static .sl-hero__chip { justify-self: start; }
+
+/* --- salon.html 機能7カード --- */
+.sl-featgrid {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px;
+}
+.sl-featgrid .sl-card { display: grid; gap: 6px; padding: 18px 18px 16px; }
+.sl-featgrid b { font-size: .95rem; font-weight: 800; color: var(--sl-navy); }
+.sl-featgrid span { font-size: .84rem; line-height: 1.75; color: var(--sl-gray); }
+
+/* --- salon.html 再来店施策 --- */
+.sl-revisit { max-width: 620px; padding: 20px 22px 18px; }
+.sl-revisit__head { margin: 0 0 10px; font-size: .95rem; font-weight: 800; color: var(--sl-navy); }
+/* LINE前提の注記は小さくしすぎない（代表判断: 正確な前提の明示） */
+.sl-note--line {
+  max-width: 620px;
+  margin-top: 14px;
+  padding: 12px 14px;
+  font-size: .88rem;
+  line-height: 1.9;
+  color: var(--text-secondary);
+  background: var(--sl-blue-pale);
+  border-radius: var(--sl-radius-sm);
+}
+
+/* --- salon.html 店舗更新8項目（既存 .sl-update__items の幅広版） --- */
+.sl-update__items--wide { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+/* --- TOP #demo 要約3枚 --- */
+.sl-demosum {
+  list-style: none; margin: 0 0 10px; padding: 0;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px;
+  align-items: end;
+}
+.sl-demosum li { margin: 0; display: grid; gap: 10px; justify-items: center; }
+.sl-demosum .sl-phone { width: min(100%, 170px); }
+.sl-demosum .sl-window { width: 100%; }
+.sl-demosum img { display: block; width: 100%; height: auto; }
+.sl-demosum__cap { margin: 0; display: grid; gap: 2px; text-align: center; }
+.sl-demosum__cap b { font-size: .9rem; font-weight: 800; color: var(--sl-navy); }
+.sl-demosum__cap span { font-size: .78rem; color: var(--sl-gray); }
+
+/* --- レスポンシブ --- */
+@media (max-width: 860px) {
+  .sl-featgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sl-update__items--wide { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sl-demosum { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+}
+@media (max-width: 640px) {
+  .sl-featgrid { grid-template-columns: minmax(0, 1fr); }
+  .sl-demosum { grid-template-columns: minmax(0, 1fr); }
+  .sl-demosum .sl-phone { width: min(100%, 190px); }
+  .sl-demosum .sl-window { width: min(100%, 340px); }
+  .sl-hero__visual--static { justify-items: center; }
+  .sl-update__items--wide { grid-template-columns: minmax(0, 1fr); }
+}
+
+
+/* ==========================================================================
+   WEB-V3-SALON-URGENT-4-R1（導入効果の変化カード）
+   ★salon.html #before-after 専用。共有CSSは変更しない。
+   ★階層: テーマ(navy) → 導入前(warm gray) → 矢印(Smart Blue) → 導入後(pale blue)
+           → 効果(最下部・最大・navy)。効果文を最も印象に残す。
+   ========================================================================== */
+
+.sl-change {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+/* 高さは固定しない。flex column ＋ 効果文の margin-top:auto で、
+   カードの高さが揃っても効果文だけが必ず最下部に来る。 */
+.sl-change__card {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 22px 22px 20px;
+  background: var(--c-white);
+  border: 1px solid #E8E2DA;
+  border-radius: var(--sl-radius);
+  box-shadow: var(--sl-shadow-sm);
+}
+
+.sl-change__theme {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin: 0 0 14px;
+  font-size: .97rem;
+  font-weight: 800;
+  color: var(--sl-navy);
+}
+.sl-change__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: var(--sl-blue-pale);
+  color: var(--sl-blue);
+}
+
+.sl-change__flow { display: grid; gap: 6px; margin: 0 0 16px; }
+
+.sl-change__before,
+.sl-change__after {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding: 12px 14px;
+  font-size: .89rem;
+  line-height: 1.75;
+  border-radius: var(--sl-radius-sm);
+}
+/* 導入前 = 淡いwarm gray／導入後 = 淡いblue */
+.sl-change__before { background: #F4F1ED; color: #7C7166; }
+.sl-change__after  { background: var(--sl-blue-pale); color: var(--sl-navy); font-weight: 600; }
+
+.sl-change__tag {
+  justify-self: start;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+}
+.sl-change__before .sl-change__tag { background: #E5DDD3; color: #7C7166; }
+.sl-change__after  .sl-change__tag { background: var(--sl-blue); color: var(--c-white); }
+
+/* 変化のアクセントは Smart Blue */
+.sl-change__arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  color: var(--sl-blue);
+}
+
+/* 効果 = カード内で最も大きく、最下部 */
+.sl-change__effect {
+  margin: auto 0 0;
+  padding-top: 15px;
+  border-top: 1px solid #EFEAE3;
+  font-size: 1.08rem;
+  font-weight: 800;
+  line-height: 1.65;
+  color: var(--sl-navy);
+}
+
+@media (max-width: 860px) {
+  /* スマホ・タブレット縦は1列。カード冒頭から効果まで一続きに読める */
+  .sl-change { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+}
+@media (max-width: 640px) {
+  .sl-change__card { padding: 20px 18px 18px; }
+  .sl-change__effect { font-size: 1.02rem; }
+}
+
+
+/* ==========================================================================
+   WEB-V3-ROUTING-CLARITY-1（商品別導線の明確化）
+   ★index.html / salon.html だけで使う。共有CSSは変更しない。
+   ========================================================================== */
+
+/* --- TOP: サービスを選ぶ（3区分） ----------------------------------------- */
+.sl-svc {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.sl-svc__card {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 22px 20px 20px;
+  background: var(--c-white);
+  border: 1px solid #E4E9F2;
+  border-radius: var(--sl-radius);
+  box-shadow: var(--sl-shadow-sm);
+}
+.sl-svc__tag {
+  align-self: start;
+  margin: 0 0 10px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: .7rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  color: var(--sl-blue);
+  background: var(--sl-blue-pale);
+}
+.sl-svc__title {
+  margin: 0 0 8px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1.5;
+  color: var(--sl-navy);
+}
+.sl-svc__desc {
+  margin: 0 0 18px;
+  font-size: .88rem;
+  line-height: 1.85;
+  color: var(--text-secondary);
+}
+/* CTAはカード下端にそろえる（高さは固定しない） */
+.sl-svc__cta { margin: auto 0 0; }
+.sl-svc__cta .btn { width: 100%; justify-content: center; }
+
+/* --- salon.html: その他のサービス（Salon主CTAより弱く） -------------------- */
+.sl-othersvc {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px 18px;
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: 20px var(--gutter) 0;
+  font-size: .82rem;
+  color: var(--sl-gray);
+  border-top: 1px solid var(--border-subtle);
+}
+.sl-othersvc__label { font-weight: 700; color: var(--sl-navy); }
+.sl-othersvc a { font-weight: 600; }
+
+@media (max-width: 860px) {
+  .sl-svc { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+}
+
+
+/* ==========================================================================
+   WEB-V3-ROUTING-CLARITY-4-R1（料金プラン：2列カードの見た目）
+   ★salon.html #pricing と index.html の価格節だけで使う。共有CSSは変更しない。
+   ★高さは固定しない（文字切れを作らない）。打ち消し線は使わない。
+   ========================================================================== */
+
+.sl-plans {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  align-items: start;
+}
+
+.sl-plan {
+  display: flex;
+  flex-direction: column;
+  padding: 26px 24px 24px;
+  border-radius: var(--sl-radius);
+  background: var(--c-white);
+}
+/* 基準カード：明確に読めるが、強調カードより弱い */
+.sl-plan--std {
+  border: 1px solid #E2E6EC;
+  background: #FAFBFC;
+  box-shadow: none;
+}
+/* 強調カード：枠と価格で強調し、全面塗りにはしない */
+.sl-plan--founder {
+  border: 2px solid var(--sl-blue);
+  box-shadow: var(--sl-shadow);
+}
+
+.sl-plan__label {
+  align-self: start;
+  margin: 0 0 12px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  color: var(--sl-gray);
+  background: #ECEFF3;
+}
+.sl-plan__badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
+.sl-plan__badge {
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  color: var(--c-white);
+  background: var(--sl-blue);
+}
+.sl-plan__badge--soft { color: var(--sl-blue); background: var(--sl-blue-pale); }
+
+.sl-plan__name {
+  margin: 0 0 10px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--sl-navy);
+}
+.sl-plan__price {
+  line-height: 1.45;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px;
+  margin: 0 0 2px;
+  color: var(--sl-navy);
+}
+/* line-heightを1.35にするのは、大きな数字の字面が行ボックスからはみ出さないようにするため
+   （clipはされないが、計測上の高さ差をなくして「文字切れ0」を機械的に検証できるようにする） */
+.sl-plan__num { font-size: 2.1rem; font-weight: 800; letter-spacing: -.01em; line-height: 1.35; }
+.sl-plan--std .sl-plan__num { font-size: 1.8rem; color: var(--text-secondary); }
+.sl-plan__unit { font-size: .92rem; font-weight: 700; }
+.sl-plan__tax { font-size: .78rem; color: var(--sl-gray); }
+.sl-plan__sub { margin: 0 0 16px; font-size: .82rem; color: var(--sl-gray); }
+
+.sl-plan__list { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 8px; }
+.sl-plan__list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #EDF0F4;
+  font-size: .86rem;
+}
+.sl-plan__list span { color: var(--sl-gray); }
+.sl-plan__list b { font-weight: 800; color: var(--sl-navy); text-align: right; }
+
+.sl-plan__note {
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  border-radius: var(--sl-radius-sm);
+  background: var(--sl-blue-pale);
+  font-size: .8rem;
+  line-height: 1.75;
+  color: var(--text-secondary);
+}
+/* CTAはカード下端へそろえる（高さ固定はしない） */
+.sl-plan__cta { margin: auto 0 0; }
+.sl-plan__cta .btn { width: 100%; justify-content: center; }
+
+/* HP制作費の分離注記 */
+.sl-plannote {
+  margin-top: 18px;
+  padding: 18px 20px;
+  border: 1px solid #E2E6EC;
+  border-radius: var(--sl-radius);
+  background: var(--c-white);
+}
+.sl-plannote__title { margin: 0 0 8px; font-size: .95rem; font-weight: 800; color: var(--sl-navy); }
+.sl-plannote__body { margin: 0; font-size: .86rem; line-height: 1.9; color: var(--text-secondary); }
+
+/* TOPの価格ボックス：限定プラン名と通常価格の併記 */
+.sl-pricebox__plan {
+  margin: 6px 0 0;
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .04em;
+  color: var(--sl-blue);
+}
+.sl-pricebox__std {
+  margin: 14px 0 0;
+  padding: 11px 14px;
+  border-radius: var(--sl-radius-sm);
+  background: #F1F4F8;
+  font-size: .8rem;
+  line-height: 1.85;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 860px) {
+  .sl-plans { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+}
+@media (max-width: 640px) {
+  .sl-plan { padding: 22px 18px 20px; }
+  .sl-plan__num { font-size: 1.9rem; }
+  .sl-plan--std .sl-plan__num { font-size: 1.65rem; }
+  /* 狭い幅では項目名と値を縦積みにして、金額の文字切れを作らない */
+  .sl-plan__list li { justify-content: flex-start; }
+  .sl-plan__list b { text-align: left; }
+}

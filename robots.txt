@@ -1,0 +1,7 @@
+# Smart Labo Works — Website
+# 検索エンジンの巡回を許可し、公開サイトマップを案内する。
+
+User-agent: *
+Allow: /
+
+Sitemap: https://smartlaboworks.com/sitemap.xml

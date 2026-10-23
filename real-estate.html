@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- ============================================================
+     2026-09-10：Smart Labo Salon 中心のサイトへ一本化。
+     旧 real-estate.html（Version 1 の不動産向けページ）は公開を終了し、index.html へ転送する。
+     旧内容は git 履歴（37a077a 以前）に残っている。
+     GitHub Pages はサーバー側の301リダイレクトを設定できないため、
+     meta refresh（0秒）と location.replace で転送し、どちらも無効な環境では本文のリンクから移動できる。
+     noindex と canonical を併用すると転送先へ noindex が伝わるおそれがあるため、canonical は置かない。
+     このページは sitemap.xml へ載せない。
+     ============================================================ -->
+
+<title>ページを移動しました｜Smart Labo Salon</title>
+<meta name="description" content="このページは公開を終了しました。Smart Labo Salon のページへご案内します。">
+<meta name="robots" content="noindex">
+<meta http-equiv="refresh" content="0; url=index.html">
+<link rel="icon" href="assets/brand/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="assets/brand/favicon-48.png" sizes="48x48" type="image/png">
+<link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap">
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/components.css">
+</head>
+<body>
+
+<main id="main" class="section">
+  <div class="container container--narrow">
+    <h1>このページは公開を終了しました</h1>
+    <p>
+      現在は Smart Labo Salon をご案内しています。
+      自動で移動しない場合は、下のリンクからお進みください。
+    </p>
+    <p>
+      <a href="index.html" class="btn btn--primary btn--lg">Smart Labo Salon のトップへ</a>
+    </p>
+  </div>
+</main>
+
+<script>
+  // 履歴を汚さずに転送する（戻るボタンでこのページへ戻らない）
+  location.replace('index.html');
+</script>
+</body>
+</html>
